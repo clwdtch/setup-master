@@ -980,7 +980,42 @@ Para vincular a um tópico específico do grupo:
 }
 ```
 
-### 3.5 — Reiniciar o OpenClaw
+### 3.5 — Aplicar configuração sem interromper o setup
+
+⚠️ **Não reinicie o Gateway/OpenClaw no meio do setup.**
+
+Reiniciar o OpenClaw pode encerrar a própria execução do agente antes que o restante do setup seja concluído. Após alterar `openclaw.json`, siga esta regra:
+
+1. Continue o setup normalmente sem reiniciar, sempre que possível.
+2. Anote que existe uma reinicialização pendente.
+3. Só reinicie em um checkpoint seguro:
+   - no final do setup; ou
+   - quando a configuração nova for indispensável para a próxima etapa.
+4. Antes de reiniciar, grave um checkpoint em `memory/setup-checkpoint.md` com:
+   - etapas concluídas
+   - etapas pendentes
+   - comando que será executado
+   - instrução para o usuário enviar “continuar setup” se a conversa cair
+
+Checkpoint recomendado antes de restart inevitável:
+
+```bash
+mkdir -p memory
+cat > memory/setup-checkpoint.md <<'EOF'
+# Setup checkpoint
+
+## Concluído
+- [preencher]
+
+## Pendente
+- [preencher]
+
+## Próximo passo
+- Se a sessão cair após o restart, o usuário deve enviar: continuar setup
+EOF
+```
+
+Somente depois do checkpoint, se realmente necessário:
 
 ```bash
 openclaw gateway restart
@@ -1079,11 +1114,15 @@ E adicione o binding:
 }
 ```
 
-### 4.7 — Reiniciar
+### 4.7 — Aplicar sub-agente sem interromper o setup
 
-```bash
-openclaw gateway restart
-```
+⚠️ Não reinicie o OpenClaw imediatamente após criar sub-agente, a menos que seja indispensável para validar o binding/canal naquele momento.
+
+Por padrão:
+
+1. registre que há restart pendente;
+2. continue o setup;
+3. faça o restart apenas no checkpoint/finalização, seguindo a regra do Passo 3.5.
 
 ---
 
