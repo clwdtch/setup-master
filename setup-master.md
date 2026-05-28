@@ -977,108 +977,8 @@ openclaw gateway restart
 
 ---
 
-## Passo 4: Criar um Sub-Agente
 
-Sub-agentes são agentes especializados que rodam no mesmo OpenClaw. Cada um tem seu próprio workspace e personalidade.
-
-### 4.1 — Criar workspace do sub-agente
-
-```bash
-AGENT_ID="meu-subagente"
-mkdir -p ~/.openclaw/workspace-${AGENT_ID}
-```
-
-### 4.2 — Criar arquivos do sub-agente
-
-Crie os mesmos arquivos do Passo 1 (AGENTS.md, SOUL.md, IDENTITY.md, USER.md, TOOLS.md, HEARTBEAT.md, MEMORY.md) dentro de `~/.openclaw/workspace-${AGENT_ID}/`, personalizados para a função do sub-agente.
-
-**Importante:** O AGENTS.md de todo sub-agente DEVE conter o bloco "⚠️ Regra de Áudio (OBRIGATÓRIO)" do Arquivo 1 acima.
-
-### 4.3 — Escolher voz TTS para o sub-agente
-
-Cada agente deve ter uma voz diferente. Vozes PT-BR disponíveis:
-- `vits-piper-pt_BR-miro-high` (Miro - qualidade alta)
-- `vits-piper-pt_BR-jeff-medium` (Jeff - qualidade média)
-- `vits-piper-pt_BR-cadu-medium` (Cadú - qualidade média)
-- `vits-piper-pt_BR-dii-high` (Dii - qualidade alta)
-- `vits-piper-pt_BR-edresson-low` (Edresson - qualidade baixa)
-
-Baixar o modelo escolhido:
-
-```bash
-VOZ="vits-piper-pt_BR-miro-high"  # trocar pela voz escolhida
-curl -L "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/${VOZ}.tar.bz2" -o /tmp/tts-model.tar.bz2
-tar xjf /tmp/tts-model.tar.bz2 -C ~/.openclaw/tools/sherpa-onnx-tts/models/
-rm /tmp/tts-model.tar.bz2
-```
-
-### 4.4 — Registrar no openclaw.json
-
-Adicione o sub-agente na seção `agents.list`:
-
-```json
-{
-  "id": "meu-subagente",
-  "name": "Meu Sub-Agente",
-  "workspace": "/root/.openclaw/workspace-meu-subagente",
-  "model": {
-    "primary": "anthropic/claude-haiku-4-5"
-  }
-}
-```
-
-### 4.5 — Criar binding do sub-agente
-
-No setup padrão não crie tópico/grupo para sub-agente. Se um sub-agente precisar conversar via Telegram, prefira bot próprio opcional ou configuração posterior explícita.
-4. Adicione um binding para o agente
-
-### 4.6 — (Opcional) Bot próprio para o sub-agente
-
-Se quiser DMs diretas com o sub-agente, crie outro bot no BotFather:
-
-```json
-{
-  "channels": {
-    "telegram": {
-      "accounts": {
-        "meu-subagente": {
-          "dmPolicy": "allowlist",
-          "botToken": "TOKEN_DO_BOT",
-          "allowFrom": ["SEU_TELEGRAM_USER_ID"],
-          "groupPolicy": "allowlist",
-          "streaming": "partial"
-        }
-      }
-    }
-  }
-}
-```
-
-E adicione o binding:
-
-```json
-{
-  "agentId": "meu-subagente",
-  "match": {
-    "channel": "telegram",
-    "accountId": "meu-subagente"
-  }
-}
-```
-
-### 4.7 — Aplicar sub-agente sem interromper o setup
-
-⚠️ Não reinicie o OpenClaw imediatamente após criar sub-agente, a menos que seja indispensável para validar o binding/canal naquele momento.
-
-Por padrão:
-
-1. registre que há restart pendente;
-2. continue o setup;
-3. faça o restart apenas no checkpoint/finalização, seguindo a regra do Passo 3.5.
-
----
-
-## Passo 5: Instalar Multica (Gestão de Agentes e Runtimes)
+## Passo 4: Instalar Multica (Gestão de Agentes e Runtimes)
 
 O Multica é a plataforma web de gestão de agentes e runtimes. Este passo instala o servidor Multica via Docker, expõe a UI com segurança via Tailscale/reverse proxy, instala Claude Code e configura o daemon/runtime rodando como usuário não-root.
 
@@ -1089,7 +989,7 @@ O Multica é a plataforma web de gestão de agentes e runtimes. Este passo insta
 > - https://github.com/multica-ai/multica/blob/main/CLI_AND_DAEMON.md
 > - https://github.com/multica-ai/multica/blob/main/CLI_INSTALL.md
 
-### 5.1 — Regras obrigatórias
+### 4.1 — Regras obrigatórias
 
 - Nunca rode o Multica daemon como root
 - Use o usuário dedicado `multica`
@@ -1102,7 +1002,7 @@ O Multica é a plataforma web de gestão de agentes e runtimes. Este passo insta
 - Serviços internos devem ficar em localhost sempre que possível
 - Não deixe tokens, PATs ou secrets expostos em logs ou relatório final
 
-### 5.2 — Portas padrão
+### 4.2 — Portas padrão
 
 Padronize, salvo conflito inevitável:
 
@@ -1118,7 +1018,7 @@ Garanta que:
 - `3002` fique acessível localmente e/ou via Tailscale
 - Se houver firewall, abra `3002/tcp` apenas na interface/zona do Tailscale quando possível
 
-### 5.3 — Auditoria
+### 4.3 — Auditoria
 
 Verifique:
 
@@ -1142,7 +1042,7 @@ Verifique:
 
 Classifique o estado como: saudável, parcialmente funcional, quebrado ou inexistente.
 
-### 5.4 — Backup e limpeza
+### 4.4 — Backup e limpeza
 
 Se houver vestígios de instalação anterior:
 
@@ -1155,7 +1055,7 @@ Se houver vestígios de instalação anterior:
 - remover conflitos de porta e inicialização
 - preservar dados importantes antes de reinstalar
 
-### 5.5 — Preparar usuário, dependências e runtimes base
+### 4.5 — Preparar usuário, dependências e runtimes base
 
 ```bash
 # Criar usuário multica, se necessário
@@ -1187,7 +1087,7 @@ sudo systemctl enable --now docker
 
 Antes de instalar/subir o Multica server, prepare os runtimes que o Multica deverá expor. O Multica só deve ser considerado pronto se conseguir enxergar **Claude Code** e **OpenClaw** depois.
 
-#### 5.5.1 — Instalar/validar Claude Code antes do Multica
+#### 4.5.1 — Instalar/validar Claude Code antes do Multica
 
 ⚠️ **Obrigatório:** instale, autentique e valide Claude Code antes de criar/subir o daemon do Multica.
 
@@ -1214,7 +1114,7 @@ command -v claude || true
 sudo -u multica -H /usr/local/bin/claude --version || true
 ```
 
-#### 5.5.1.1 — Autenticar Claude Code obrigatoriamente
+#### 4.5.1.1 — Autenticar Claude Code obrigatoriamente
 
 Claude Code deve ser autenticado **obrigatoriamente** no mesmo usuário que rodará o daemon do Multica: `multica`.
 
@@ -1248,7 +1148,7 @@ sudo -u multica -H claude whoami
 
 Se `claude whoami` falhar, corrija a autenticação e tente novamente. Marque como `[bloqueado]` apenas se depender de ação humana que ainda não foi concluída.
 
-#### 5.5.2 — Instalar/validar OpenClaw runtime antes do Multica
+#### 4.5.2 — Instalar/validar OpenClaw runtime antes do Multica
 
 Localize o OpenClaw e garanta path global para o daemon:
 
@@ -1265,7 +1165,7 @@ Path preferencial para o serviço do Multica:
 
 Se o binário estiver em outro lugar, ajuste depois `MULTICA_OPENCLAW_PATH` no `multica-daemon.service` para o path real.
 
-### 5.6 — Instalar Multica server
+### 4.6 — Instalar Multica server
 
 ```bash
 sudo mkdir -p /opt
@@ -1316,7 +1216,7 @@ sudo docker compose -f docker-compose.selfhost.yml up -d
 sudo docker compose -f docker-compose.selfhost.yml ps
 ```
 
-### 5.7 — Reverse proxy e segurança
+### 4.7 — Reverse proxy e segurança
 
 Configure Caddy para expor o Multica em `:3002`:
 
@@ -1356,7 +1256,7 @@ Garanta que o banco/backend não estão públicos:
 ss -ltnp | grep -E ':(3001|3002|8082|54330)'
 ```
 
-### 5.8 — Instalar e validar Tailscale
+### 4.8 — Instalar e validar Tailscale
 
 O Multica deve ficar acessível de forma privada via Tailscale. Para isso, a **VPS** e o **computador/celular do usuário** precisam estar na mesma tailnet.
 
@@ -1394,7 +1294,7 @@ if command -v firewall-cmd >/dev/null 2>&1; then
 fi
 ```
 
-### 5.9 — Bootstrap de login do Multica
+### 4.9 — Bootstrap de login do Multica
 
 Se email real ainda não estiver configurado:
 
@@ -1423,7 +1323,7 @@ sudo sed -i 's/^MULTICA_DEV_VERIFICATION_CODE=.*/MULTICA_DEV_VERIFICATION_CODE=/
 sudo docker compose -f docker-compose.selfhost.yml up -d
 ```
 
-### 5.10 — Instalar Multica CLI e daemon
+### 4.10 — Instalar Multica CLI e daemon
 
 Instale a CLI conforme documentação oficial do Multica. Depois autentique como usuário `multica` usando o PAT:
 
@@ -1469,11 +1369,11 @@ sudo -u multica -H multica daemon status || true
 sudo -u multica -H multica runtime list || true
 ```
 
-### 5.11 — Validar Claude Code runtime no Multica
+### 4.11 — Validar Claude Code runtime no Multica
 
 ⚠️ **Obrigatório:** o runtime do Claude Code precisa ficar disponível e online no Multica. A instalação do Multica não está completa enquanto o Claude Code não aparecer no `multica runtime list`.
 
-Claude Code já deve ter sido instalado e autenticado obrigatoriamente no Passo 5.5. Aqui, apenas revalide o binário global e o usuário `multica`:
+Claude Code já deve ter sido instalado e autenticado obrigatoriamente no Passo 4.5. Aqui, apenas revalide o binário global e o usuário `multica`:
 
 ```bash
 /usr/local/bin/claude
@@ -1487,7 +1387,7 @@ claude --version
 sudo -u multica -H claude --version
 ```
 
-Se o login ainda não tiver sido feito, isso é uma falha do Passo 5.5. Faça a autenticação obrigatória agora antes de validar runtime. Execute no mesmo usuário do Multica usando, conforme disponibilidade:
+Se o login ainda não tiver sido feito, isso é uma falha do Passo 4.5. Faça a autenticação obrigatória agora antes de validar runtime. Execute no mesmo usuário do Multica usando, conforme disponibilidade:
 
 ```bash
 sudo -u multica -H claude login
@@ -1509,11 +1409,11 @@ Não considere Claude Code runtime pronto se o usuário `multica` não estiver a
 
 Se Claude Code reclamar de execução como root ou sudo com permissões perigosas, corrija migrando o daemon para usuário não-root, nunca forçando execução como root.
 
-### 5.12 — Validar OpenClaw runtime no Multica
+### 4.12 — Validar OpenClaw runtime no Multica
 
 ⚠️ **Obrigatório:** o runtime do OpenClaw precisa ficar disponível e online no Multica. A instalação do Multica não está completa enquanto o OpenClaw não aparecer no `multica runtime list`.
 
-OpenClaw já deve ter sido localizado/validado no Passo 5.5. Aqui, revalide:
+OpenClaw já deve ter sido localizado/validado no Passo 4.5. Aqui, revalide:
 
 ```bash
 openclaw --version
@@ -1540,7 +1440,7 @@ Critério obrigatório de pronto:
 - `multica runtime list` deve mostrar **OpenClaw** online/disponível
 - se qualquer um dos dois não aparecer, corrija path, permissão, instalação, autenticação ou serviço systemd antes de finalizar
 
-### 5.13 — Se precisar de autenticação humana
+### 4.13 — Se precisar de autenticação humana
 
 Só nesse momento interrompa e entregue:
 
@@ -1552,7 +1452,7 @@ Só nesse momento interrompa e entregue:
 
 Não interrompa antes disso.
 
-### 5.14 — Finalização do Multica
+### 4.14 — Finalização do Multica
 
 Depois que os logins necessários forem confirmados:
 
@@ -1596,7 +1496,7 @@ curl -I http://<tailscale-ip-ou-hostname>:3002
 
 - reiniciar serviços apenas se necessário, informando qual serviço será reiniciado e por quê
 
-### 5.15 — Relatório final do Multica
+### 4.15 — Relatório final do Multica
 
 Entregue no final:
 
@@ -1626,9 +1526,8 @@ Depois de criar todos os arquivos e executar as configurações:
 4. 🤖 Pergunte o **token do bot Telegram** (do BotFather)
 5. 📝 Leia IDENTITY.md e USER.md e peça ao usuário para preencher os campos _(...)_
 6. 🎵 Teste o TTS gerando um áudio de boas-vindas
-7. 🤖 Pergunte se quer criar algum sub-agente
-8. 📦 Confirme que o Multica está rodando (`curl -I http://127.0.0.1:3002`)
-9. 🌐 Monte e entregue o link final para o usuário acessar o Multica na VPS via Tailscale (`http://<tailscale-ip-ou-hostname>:3002`)
-10. 🖥️ Instrua o usuário a instalar Tailscale no computador/celular, logar na mesma tailnet da VPS e abrir o link final do Multica
-11. 🔐 Valide Multica CLI autenticado e daemon ativo como usuário `multica`
-12. 🤖 Valide runtimes disponíveis (`multica runtime list`): Claude Code e OpenClaw são obrigatórios para considerar a instalação concluída
+7. 📦 Confirme que o Multica está rodando (`curl -I http://127.0.0.1:3002`)
+8. 🌐 Monte e entregue o link final para o usuário acessar o Multica na VPS via Tailscale (`http://<tailscale-ip-ou-hostname>:3002`)
+9. 🖥️ Instrua o usuário a instalar Tailscale no computador/celular, logar na mesma tailnet da VPS e abrir o link final do Multica
+10. 🔐 Valide Multica CLI autenticado e daemon ativo como usuário `multica`
+11. 🤖 Valide runtimes disponíveis (`multica runtime list`): Claude Code e OpenClaw são obrigatórios para considerar a instalação concluída

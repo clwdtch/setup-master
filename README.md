@@ -33,7 +33,6 @@ Depois de aplicado, o OpenClaw do usuário passa a operar como **Master**:
 - Arquivos base do workspace (`AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`, `TOOLS.md`, `HEARTBEAT.md`)
 - Áudio local com sherpa-onnx TTS e Whisper local
 - Configuração Telegram
-- Criação de sub-agentes
 - Instalação/operação do Multica
 - Validação de setup completo, incluindo Tailscale, Multica CLI/daemon e runtimes Claude Code + OpenClaw
 
