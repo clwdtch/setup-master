@@ -60,7 +60,7 @@ Checklist obrigatório do setup completo:
    - usuário instruído a instalar Tailscale no computador/celular e entrar na mesma tailnet
 6. Runtimes base preparados antes do Multica:
    - Claude Code instalado em path global
-   - Claude Code validado no usuário `multica`
+   - Claude Code obrigatoriamente autenticado e validado no usuário `multica`
    - OpenClaw instalado/localizado em path global
 7. Multica validado:
    - containers Docker rodando
@@ -1189,7 +1189,7 @@ Antes de instalar/subir o Multica server, prepare os runtimes que o Multica deve
 
 #### 5.5.1 — Instalar/validar Claude Code antes do Multica
 
-⚠️ **Obrigatório:** instale e valide Claude Code antes de criar/subir o daemon do Multica.
+⚠️ **Obrigatório:** instale, autentique e valide Claude Code antes de criar/subir o daemon do Multica.
 
 Instale Claude Code conforme método oficial disponível no ambiente. Garanta binário global, preferencialmente:
 
@@ -1214,7 +1214,13 @@ command -v claude || true
 sudo -u multica -H /usr/local/bin/claude --version || true
 ```
 
-Se precisar de autenticação humana, pare apenas aqui e entregue o comando/link exato. Depois autentique Claude no mesmo usuário que rodará o daemon:
+#### 5.5.1.1 — Autenticar Claude Code obrigatoriamente
+
+Claude Code deve ser autenticado **obrigatoriamente** no mesmo usuário que rodará o daemon do Multica: `multica`.
+
+Não trate autenticação do Claude como opcional. Não avance para a instalação do Multica server enquanto `sudo -u multica -H claude whoami` não confirmar login válido.
+
+Execute o login interativo no usuário `multica` e capture a saída exibida pelo CLI:
 
 ```bash
 sudo -u multica -H claude login
@@ -1226,11 +1232,21 @@ ou:
 sudo -u multica -H claude auth login
 ```
 
-Depois valide:
+Se o comando gerar link de autenticação, código, device code ou pedir token no terminal:
+
+1. Copie o link/código exatamente como apareceu.
+2. Envie ao usuário instruções claras para abrir o link, concluir o login e retornar o token/código/confirmar a autenticação.
+3. Pare a execução nesse ponto e aguarde a resposta do usuário.
+4. Depois de receber o retorno, conclua o login no terminal se o CLI solicitar entrada.
+5. Só continue quando a validação abaixo passar.
+
+Validação obrigatória antes de avançar:
 
 ```bash
-sudo -u multica -H claude whoami || true
+sudo -u multica -H claude whoami
 ```
+
+Se `claude whoami` falhar, corrija a autenticação e tente novamente. Marque como `[bloqueado]` apenas se depender de ação humana que ainda não foi concluída.
 
 #### 5.5.2 — Instalar/validar OpenClaw runtime antes do Multica
 
@@ -1457,7 +1473,7 @@ sudo -u multica -H multica runtime list || true
 
 ⚠️ **Obrigatório:** o runtime do Claude Code precisa ficar disponível e online no Multica. A instalação do Multica não está completa enquanto o Claude Code não aparecer no `multica runtime list`.
 
-Claude Code já deve ter sido instalado e autenticado no Passo 5.5. Aqui, apenas revalide o binário global e o usuário `multica`:
+Claude Code já deve ter sido instalado e autenticado obrigatoriamente no Passo 5.5. Aqui, apenas revalide o binário global e o usuário `multica`:
 
 ```bash
 /usr/local/bin/claude
@@ -1471,7 +1487,7 @@ claude --version
 sudo -u multica -H claude --version
 ```
 
-Se o login ainda não tiver sido feito, execute no mesmo usuário do Multica usando, conforme disponibilidade:
+Se o login ainda não tiver sido feito, isso é uma falha do Passo 5.5. Faça a autenticação obrigatória agora antes de validar runtime. Execute no mesmo usuário do Multica usando, conforme disponibilidade:
 
 ```bash
 sudo -u multica -H claude login
@@ -1488,6 +1504,8 @@ Depois valide:
 ```bash
 sudo -u multica -H claude whoami
 ```
+
+Não considere Claude Code runtime pronto se o usuário `multica` não estiver autenticado no Claude Code.
 
 Se Claude Code reclamar de execução como root ou sudo com permissões perigosas, corrija migrando o daemon para usuário não-root, nunca forçando execução como root.
 
