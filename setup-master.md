@@ -53,7 +53,6 @@ Checklist obrigatório do setup completo:
    - token recebido
    - `openclaw.json` atualizado
    - binding criado
-   - grupo/tópicos configurados se o usuário quiser
    - gateway reiniciado
 5. Tailscale validado:
    - VPS conectada à tailnet
@@ -882,19 +881,11 @@ Edite o arquivo `~/.openclaw/openclaw.json` e adicione/atualize a seção `chann
       "enabled": true,
       "dmPolicy": "pairing",
       "defaultAccount": "default",
-      "groupPolicy": "allowlist",
-      "groupAllowFrom": ["SEU_TELEGRAM_USER_ID"],
       "streaming": "partial",
-      "groups": {
-        "*": {
-          "requireMention": true
-        }
-      },
       "accounts": {
         "default": {
           "dmPolicy": "pairing",
           "botToken": "SEU_BOT_TOKEN_AQUI",
-          "groupPolicy": "allowlist",
           "streaming": "partial"
         }
       }
@@ -903,49 +894,21 @@ Edite o arquivo `~/.openclaw/openclaw.json` e adicione/atualize a seção `chann
 }
 ```
 
-### 3.3 — Configurar Grupo com Tópicos (Threads)
+### 3.3 — Usar apenas o bot padrão em conversa direta
 
-A forma recomendada de usar o OpenClaw no Telegram é com um **supergrupo com tópicos ativados**. Cada agente fica em seu próprio tópico.
+O setup padrão do Master usa **apenas um bot Telegram em conversa direta (DM)**.
 
-**Como criar:**
+Não configure grupo, supergrupo, tópicos ou threads durante o setup inicial. Isso reduz fricção e evita reinicializações/configurações extras no primeiro bootstrap.
 
-1. Crie um grupo no Telegram
-2. Vá em **Configurações do grupo → Tópicos** e ative
-3. O tópico "General" (ID `1`) é criado automaticamente — use para o agente principal
-4. Crie novos tópicos para cada sub-agente que quiser
-5. Adicione o bot ao grupo como administrador
+Fluxo esperado:
 
-**Para descobrir os IDs do grupo e dos tópicos:**
+1. Usuário cria o bot no @BotFather
+2. Usuário entrega o token ao agente
+3. Agente configura a conta Telegram `default`
+4. Usuário conversa diretamente com o bot
+5. OpenClaw roteia essa DM para o agente `main`
 
-```bash
-# Envie uma mensagem no grupo/tópico, depois rode:
-curl -s "https://api.telegram.org/botSEU_TOKEN/getUpdates" | python3 -m json.tool | grep -E "(chat.*id|message_thread_id)"
-```
-
-O `chat.id` será negativo (ex: `-1001234567890`) — esse é o ID do grupo.
-O `message_thread_id` é o ID do tópico.
-
-**Adicionar grupo no openclaw.json:**
-
-```json
-{
-  "channels": {
-    "telegram": {
-      "groups": {
-        "ID_DO_SEU_GRUPO": {
-          "requireMention": false,
-          "groupPolicy": "open",
-          "topics": {
-            "1": {
-              "agentId": "main"
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
+Grupos/tópicos podem ser adicionados depois como configuração avançada, somente se o usuário pedir explicitamente.
 
 ### 3.4 — Bindings (associar agentes a canais)
 
@@ -965,20 +928,7 @@ Cada agente precisa de um binding no `openclaw.json`. O binding diz ao OpenClaw 
 }
 ```
 
-Para vincular a um tópico específico do grupo:
-
-```json
-{
-  "agentId": "meu-subagente",
-  "match": {
-    "channel": "telegram",
-    "peer": {
-      "kind": "group",
-      "id": "ID_DO_GRUPO:topic:ID_DO_TOPICO"
-    }
-  }
-}
-```
+Não crie binding de grupo/tópico no setup padrão. Use apenas o binding da conta `default` para conversa direta com o bot.
 
 ### 3.5 — Aplicar configuração sem interromper o setup
 
@@ -1073,11 +1023,9 @@ Adicione o sub-agente na seção `agents.list`:
 }
 ```
 
-### 4.5 — Criar binding + tópico
+### 4.5 — Criar binding do sub-agente
 
-1. Crie um tópico no grupo do Telegram
-2. Descubra o ID do tópico (via getUpdates)
-3. Adicione no `topics` do grupo no openclaw.json
+No setup padrão não crie tópico/grupo para sub-agente. Se um sub-agente precisar conversar via Telegram, prefira bot próprio opcional ou configuração posterior explícita.
 4. Adicione um binding para o agente
 
 ### 4.6 — (Opcional) Bot próprio para o sub-agente
@@ -1585,10 +1533,9 @@ Depois de criar todos os arquivos e executar as configurações:
 4. 🤖 Pergunte o **token do bot Telegram** (do BotFather)
 5. 📝 Leia IDENTITY.md e USER.md e peça ao usuário para preencher os campos _(...)_
 6. 🎵 Teste o TTS gerando um áudio de boas-vindas
-7. 📱 Pergunte se o usuário quer configurar um grupo Telegram com tópicos
-8. 🤖 Pergunte se quer criar algum sub-agente
-9. 📦 Confirme que o Multica está rodando (`curl -I http://127.0.0.1:3002`)
-10. 🌐 Confirme a URL final via Tailscale (`http://<tailscale-ip-ou-hostname>:3002`)
-11. 🖥️ Instrua o usuário a instalar Tailscale no computador/celular, logar na mesma tailnet da VPS e abrir a URL final do Multica
-12. 🔐 Valide Multica CLI autenticado e daemon ativo como usuário `multica`
-13. 🤖 Valide runtimes disponíveis (`multica runtime list`): Claude Code e OpenClaw são obrigatórios para considerar a instalação concluída
+7. 🤖 Pergunte se quer criar algum sub-agente
+8. 📦 Confirme que o Multica está rodando (`curl -I http://127.0.0.1:3002`)
+9. 🌐 Confirme a URL final via Tailscale (`http://<tailscale-ip-ou-hostname>:3002`)
+10. 🖥️ Instrua o usuário a instalar Tailscale no computador/celular, logar na mesma tailnet da VPS e abrir a URL final do Multica
+11. 🔐 Valide Multica CLI autenticado e daemon ativo como usuário `multica`
+12. 🤖 Valide runtimes disponíveis (`multica runtime list`): Claude Code e OpenClaw são obrigatórios para considerar a instalação concluída
