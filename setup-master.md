@@ -1132,7 +1132,12 @@ sudo cp -n .env.example .env
 
 JWT_SECRET="$(openssl rand -hex 32)"
 sudo sed -i "s/^JWT_SECRET=.*/JWT_SECRET=${JWT_SECRET}/" .env 2>/dev/null || echo "JWT_SECRET=${JWT_SECRET}" | sudo tee -a .env >/dev/null
-sudo grep -q '^APP_ENV=' .env && sudo sed -i 's/^APP_ENV=.*/APP_ENV=production/' .env || echo 'APP_ENV=production' | sudo tee -a .env >/dev/null
+
+# Bootstrap privado via Tailscale: habilita código fixo temporário para primeiro login.
+# IMPORTANTE: isso só é aceitável enquanto a instância estiver privada; antes de exposição pública,
+# volte APP_ENV=production e remova/limpe MULTICA_DEV_VERIFICATION_CODE.
+sudo grep -q '^APP_ENV=' .env && sudo sed -i 's/^APP_ENV=.*/APP_ENV=development/' .env || echo 'APP_ENV=development' | sudo tee -a .env >/dev/null
+sudo grep -q '^MULTICA_DEV_VERIFICATION_CODE=' .env && sudo sed -i 's/^MULTICA_DEV_VERIFICATION_CODE=.*/MULTICA_DEV_VERIFICATION_CODE=000000/' .env || echo 'MULTICA_DEV_VERIFICATION_CODE=000000' | sudo tee -a .env >/dev/null
 ```
 
 Configure no `.env`, de acordo com a URL final via Tailscale:
@@ -1141,7 +1146,11 @@ Configure no `.env`, de acordo com a URL final via Tailscale:
 MULTICA_APP_URL=http://<tailscale-ip-ou-hostname>:3002
 FRONTEND_ORIGIN=http://<tailscale-ip-ou-hostname>:3002
 ALLOWED_ORIGINS=http://<tailscale-ip-ou-hostname>:3002,http://127.0.0.1:3002
+APP_ENV=development
+MULTICA_DEV_VERIFICATION_CODE=000000
 ```
+
+> 🔐 Login inicial do Multica: informe ao usuário que, no primeiro acesso privado via Tailscale, ele deve entrar com o email escolhido e usar o código de verificação **000000**. Reforce que esse código é temporário e deve ser removido antes de qualquer exposição pública.
 
 Configure os binds internos preferencialmente assim:
 
@@ -1227,7 +1236,9 @@ fi
 Se email real ainda não estiver configurado:
 
 - use fluxo de bootstrap seguro apenas para instância privada via Tailscale
-- se houver código/dev verification temporário, use apenas para primeiro acesso
+- configure `APP_ENV=development` e `MULTICA_DEV_VERIFICATION_CODE=000000` para simplificar o primeiro login privado
+- informe explicitamente ao usuário: **"Para logar no Multica, use o código 000000"**
+- use esse código/dev verification temporário apenas para primeiro acesso privado
 - depois recomende desabilitar código compartilhado ou configurar email real
 
 Fluxo esperado, quando aplicável:
@@ -1239,6 +1250,15 @@ POST /api/tokens
 ```
 
 Crie um PAT para autenticar a CLI no próprio VPS. Não vaze o PAT no relatório final.
+
+Depois que o login inicial e o PAT estiverem funcionando, recomende endurecer a autenticação:
+
+```bash
+cd /opt/multica
+sudo sed -i 's/^APP_ENV=.*/APP_ENV=production/' .env
+sudo sed -i 's/^MULTICA_DEV_VERIFICATION_CODE=.*/MULTICA_DEV_VERIFICATION_CODE=/' .env
+sudo docker compose -f docker-compose.selfhost.yml up -d
+```
 
 ### 5.10 — Instalar Multica CLI e daemon
 
