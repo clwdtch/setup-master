@@ -1210,6 +1210,21 @@ ss -ltnp | grep -E ':(3001|3002|8082|54330)'
 
 ### 5.8 — Instalar e validar Tailscale
 
+O Multica deve ficar acessível de forma privada via Tailscale. Para isso, a **VPS** e o **computador/celular do usuário** precisam estar na mesma tailnet.
+
+Antes de considerar o acesso pronto, instrua o usuário:
+
+1. Instalar o Tailscale no computador/celular dele: https://tailscale.com/download
+2. Fazer login na mesma conta/tailnet usada pela VPS
+3. Confirmar que a VPS aparece na lista de devices do Tailscale
+4. Abrir a URL final do Multica no navegador usando o IP/hostname Tailscale da VPS, por exemplo:
+
+```text
+http://<tailscale-ip-ou-hostname>:3002
+```
+
+Se o usuário não estiver na mesma tailnet, o Multica pode estar funcionando corretamente na VPS e ainda assim parecer inacessível no navegador dele.
+
 ```bash
 if ! command -v tailscale >/dev/null 2>&1; then
   curl -fsSL https://tailscale.com/install.sh | sh
@@ -1397,6 +1412,7 @@ Depois que os logins necessários forem confirmados:
 - validar runtimes disponíveis: **Claude Code e OpenClaw são obrigatórios**
 - validar Tailscale conectado
 - obter IP e/ou hostname da tailnet
+- confirmar que o usuário instalou Tailscale no computador/celular e entrou na mesma tailnet da VPS
 
 Não considere o Multica finalizado se faltar um dos dois runtimes obrigatórios:
 
@@ -1435,7 +1451,7 @@ Entregue no final:
 6. Containers Docker ativos
 7. Evidências de funcionamento
 8. Status do Tailscale
-9. URL final de acesso via Tailscale
+9. URL final de acesso via Tailscale e instrução para o usuário acessar usando um device na mesma tailnet
 10. Status do Multica CLI/daemon
 11. Runtimes disponíveis, obrigatoriamente incluindo Claude Code e OpenClaw
 12. Pendências, se houver
@@ -1457,5 +1473,6 @@ Depois de criar todos os arquivos e executar as configurações:
 8. 🤖 Pergunte se quer criar algum sub-agente
 9. 📦 Confirme que o Multica está rodando (`curl -I http://127.0.0.1:3002`)
 10. 🌐 Confirme a URL final via Tailscale (`http://<tailscale-ip-ou-hostname>:3002`)
-11. 🔐 Valide Multica CLI autenticado e daemon ativo como usuário `multica`
-12. 🤖 Valide runtimes disponíveis (`multica runtime list`): Claude Code e OpenClaw são obrigatórios para considerar a instalação concluída
+11. 🖥️ Instrua o usuário a instalar Tailscale no computador/celular, logar na mesma tailnet da VPS e abrir a URL final do Multica
+12. 🔐 Valide Multica CLI autenticado e daemon ativo como usuário `multica`
+13. 🤖 Valide runtimes disponíveis (`multica runtime list`): Claude Code e OpenClaw são obrigatórios para considerar a instalação concluída
