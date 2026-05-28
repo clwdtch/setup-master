@@ -1308,6 +1308,8 @@ sudo -u multica -H multica runtime list || true
 
 ### 5.11 — Instalar Claude Code
 
+⚠️ **Obrigatório:** o runtime do Claude Code precisa ficar disponível e online no Multica. A instalação do Multica não está completa enquanto o Claude Code não aparecer no `multica runtime list`.
+
 Instale Claude Code conforme método oficial disponível no ambiente. Garanta binário global, preferencialmente:
 
 ```bash
@@ -1344,6 +1346,8 @@ Se Claude Code reclamar de execução como root ou sudo com permissões perigosa
 
 ### 5.12 — Instalar/validar OpenClaw runtime, se disponível
 
+⚠️ **Obrigatório:** o runtime do OpenClaw precisa ficar disponível e online no Multica. A instalação do Multica não está completa enquanto o OpenClaw não aparecer no `multica runtime list`.
+
 Se OpenClaw estiver instalado:
 
 ```bash
@@ -1365,6 +1369,12 @@ Valide que o daemon do Multica enxerga os runtimes:
 sudo -u multica -H multica runtime list || true
 ```
 
+Critério obrigatório de pronto:
+
+- `multica runtime list` deve mostrar **Claude Code** online/disponível
+- `multica runtime list` deve mostrar **OpenClaw** online/disponível
+- se qualquer um dos dois não aparecer, corrija path, permissão, instalação, autenticação ou serviço systemd antes de finalizar
+
 ### 5.13 — Se precisar de autenticação humana
 
 Só nesse momento interrompa e entregue:
@@ -1384,9 +1394,20 @@ Depois que os logins necessários forem confirmados:
 - validar Claude Code no usuário `multica`
 - validar Multica CLI autenticado
 - validar Multica daemon online
-- validar runtimes disponíveis
+- validar runtimes disponíveis: **Claude Code e OpenClaw são obrigatórios**
 - validar Tailscale conectado
 - obter IP e/ou hostname da tailnet
+
+Não considere o Multica finalizado se faltar um dos dois runtimes obrigatórios:
+
+```bash
+sudo -u multica -H multica runtime list
+```
+
+O relatório final deve dizer explicitamente:
+
+- Claude Code runtime: online/disponível ou bloqueado com motivo
+- OpenClaw runtime: online/disponível ou bloqueado com motivo
 - montar a URL final de acesso ao Multica via Tailscale
 - testar acesso local:
 
@@ -1416,7 +1437,7 @@ Entregue no final:
 8. Status do Tailscale
 9. URL final de acesso via Tailscale
 10. Status do Multica CLI/daemon
-11. Runtimes disponíveis
+11. Runtimes disponíveis, obrigatoriamente incluindo Claude Code e OpenClaw
 12. Pendências, se houver
 
 
@@ -1437,4 +1458,4 @@ Depois de criar todos os arquivos e executar as configurações:
 9. 📦 Confirme que o Multica está rodando (`curl -I http://127.0.0.1:3002`)
 10. 🌐 Confirme a URL final via Tailscale (`http://<tailscale-ip-ou-hostname>:3002`)
 11. 🔐 Valide Multica CLI autenticado e daemon ativo como usuário `multica`
-12. 🤖 Valide runtimes disponíveis (`multica runtime list`), incluindo Claude Code e OpenClaw quando disponíveis
+12. 🤖 Valide runtimes disponíveis (`multica runtime list`): Claude Code e OpenClaw são obrigatórios para considerar a instalação concluída
