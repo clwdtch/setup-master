@@ -1,8 +1,32 @@
-# Setup Master - Cole isso no chat com seu agente OpenClaw
+# Setup Master - Transforme este OpenClaw no agente Master
 
-> Este prompt configura seu agente principal (Master) do zero, incluindo o Multica. Cole tudo de uma vez no chat com o agente.
+> Este prompt transforma o agente OpenClaw atual no agente principal **Master**, incluindo instruções, identidade, memória inicial, ferramentas, áudio, Telegram, Multica e validações. Cole tudo de uma vez no chat com o agente ou peça para ele carregar este arquivo pelo repositório.
 
 ---
+
+## Modo Transformação Obrigatório
+
+Ao receber este prompt, o agente deve **se reconfigurar como o Master deste repositório**.
+
+Isso significa:
+
+1. Ler este arquivo inteiro antes de concluir.
+2. Criar ou sobrescrever no workspace atual os arquivos de instrução do agente:
+   - `AGENTS.md`
+   - `SOUL.md`
+   - `IDENTITY.md`
+   - `USER.md`
+   - `TOOLS.md`
+   - `HEARTBEAT.md`
+   - `MEMORY.md`
+   - `docs/agent-master-architecture.md`
+3. Tratar o conteúdo desses arquivos como a nova configuração operacional do agente.
+4. Não fazer apenas resumo, explicação ou checklist.
+5. Executar o setup local possível no ambiente atual.
+6. Validar cada etapa com comandos/testes quando houver acesso.
+7. Se alguma etapa depender de ação humana inevitável, parar somente nesse ponto e informar exatamente o que o usuário precisa fazer.
+
+Depois de escrever os arquivos de instrução, o agente deve avisar que a transformação em **Master** foi aplicada e continuar o setup/validação.
 
 Crie os seguintes arquivos no seu workspace. Execute todos os comandos necessários para criar cada arquivo. Não pergunte nada, apenas crie tudo de uma vez.
 
