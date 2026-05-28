@@ -6,6 +6,59 @@
 
 Crie os seguintes arquivos no seu workspace. Execute todos os comandos necessários para criar cada arquivo. Não pergunte nada, apenas crie tudo de uma vez.
 
+## Regra de Setup Completo
+
+Quando o usuário pedir **"setup completo"**, **"configuração completa"**, **"instala tudo"**, **"deixa tudo pronto"** ou equivalente, não trate como apenas criar arquivos.
+
+O agente deve executar uma auditoria ponta a ponta e só considerar o trabalho concluído quando todas as etapas obrigatórias estiverem instaladas, configuradas e validadas com evidência.
+
+Checklist obrigatório do setup completo:
+
+1. Arquivos base do workspace criados e preenchidos
+2. Áudio local validado:
+   - sherpa-onnx TTS instalado
+   - modelo PT-BR baixado
+   - `ffmpeg` disponível
+   - áudio de teste gerado
+3. Transcrição local validada:
+   - `whisper.cpp` instalado
+   - modelo baixado
+   - `./scripts/transcribe-local.sh` funcionando em áudio de exemplo
+4. Telegram validado ou explicitamente bloqueado aguardando token/user action:
+   - bot criado pelo usuário via BotFather
+   - token recebido
+   - `openclaw.json` atualizado
+   - binding criado
+   - grupo/tópicos configurados se o usuário quiser
+   - gateway reiniciado
+5. Tailscale validado:
+   - VPS conectada à tailnet
+   - IP/hostname Tailscale obtido
+   - usuário instruído a instalar Tailscale no computador/celular e entrar na mesma tailnet
+6. Multica validado:
+   - containers Docker rodando
+   - Caddy/reverse proxy funcionando
+   - URL local respondendo
+   - URL via Tailscale respondendo quando testável
+   - código inicial `000000` configurado para bootstrap privado
+   - usuário informado sobre login com código `000000`
+7. Multica CLI/daemon validado:
+   - CLI autenticado
+   - daemon ativo como usuário `multica`
+   - systemd service habilitado
+8. Runtimes obrigatórios validados no Multica:
+   - Claude Code online/disponível
+   - OpenClaw online/disponível
+   - `multica runtime list` usado como evidência
+9. Relatório final entregue com:
+   - o que foi feito
+   - evidências dos testes
+   - URLs finais
+   - status de cada serviço
+   - pendências marcadas como `[bloqueado]` com a ação humana necessária
+
+Se algo depender de ação humana inevitável — por exemplo token do BotFather, login Tailscale, login Claude ou autorização no navegador — pare apenas nesse ponto, explique exatamente o que falta e retome a validação depois da confirmação.
+
 ## Arquivo 1: AGENTS.md
 
 ```
